@@ -1,0 +1,11 @@
+---
+- hosts: servers
+  vars:
+    - ansible_user: ansible-setup
+  tasks:
+    - local_action: command ssh-keygen -t rsa -f ../keys/id_rsa
+      ignore_errors: yes
+    - user: name={{ansible_user}} group=wheel state=present
+    - authorized_key: user={{ansible_user}} key="{{ lookup('file', '../keys/id_rsa.pub') }}"
+    - copy: src=sudoers.ansible dest=/etc/sudoers.d/ansible-setup
+

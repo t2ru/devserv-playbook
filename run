@@ -1,0 +1,10 @@
+#!/bin/sh
+INVENTORY=hosts
+ANSIBLE_USER=ansible-setup
+
+ansible-playbook \
+--inventory-file=${INVENTORY} \
+--user=${ANSIBLE_USER} \
+--private-key=keys/id_rsa \
+site.yml
+

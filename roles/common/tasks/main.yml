@@ -7,6 +7,9 @@
   selinux: state=disabled
   sudo: yes
 # IP Tables
+- name: enable iptables
+  service: name=iptables state=started enabled=yes
+  sudo: yes
 - name: initialize iptables
   template: src=iptables.j2 dest=/etc/sysconfig/iptables
   sudo: yes
@@ -24,10 +27,4 @@
   pip: name={{item}} state=present
   with_items:
     - virtualenv
-# installing apache
-- name: install apache
-  yum: pkg=httpd state=installed
-  sudo: yes
-  notify:
-    - restart apache
 

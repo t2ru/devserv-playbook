@@ -2,7 +2,4 @@
 - name: restart iptables
   service: name=iptables state=restarted
   sudo: yes
-- name: restart apache
-  service: name=httpd state=restarted
-  sudo: yes
 

@@ -1,1 +1,9 @@
 ---
+# installing apache
+- name: install apache
+  yum: pkg=httpd state=installed
+  sudo: yes
+- name: enable apache
+  service: name=httpd state=started enabled=yes
+  sudo: yes
+# 

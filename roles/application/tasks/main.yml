@@ -3,7 +3,37 @@
 - name: install apache
   yum: pkg=httpd state=installed
   sudo: yes
+- name: install apache mod_wsgi
+  yum: pkg=mod_wsgi state=installed
+  sudo: yes
+  notify:
+    - restart apache
 - name: enable apache
   service: name=httpd state=started enabled=yes
   sudo: yes
-# 
+# install trac
+- name: trac directories
+  file:
+    path={{ item }} state=directory
+    owner={{ trac.service_user }} group={{ trac.service_group }}
+  with_items:
+    - "{{ trac.venv_dir }}"
+    - "{{ trac.site_dir }}"
+    - "{{ trac.site_dir }}/projects"
+    - "{{ trac.site_dir }}/sock"
+    - "{{ trac.site_dir }}/egg-cache"
+  sudo: yes
+- name: install trac
+  pip: name=Trac virtualenv={{ trac.venv_dir }}
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac wsgi executable
+  template: src=trac/dispatch.wsgi.j2 dest={{ trac.site_dir }}/dispatch.wsgi
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac apache configuration
+  template: src=trac/httpd.conf.j2 dest=/etc/httpd/conf.d/trac.conf
+  sudo: yes
+  notify:
+    - restart apache
+

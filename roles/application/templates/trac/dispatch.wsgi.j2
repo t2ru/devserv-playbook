@@ -1,0 +1,10 @@
+import os, site
+
+site.addsitedir('{{trac.venv_dir}}/lib/python2.6/site-packages')
+
+os.environ['TRAC_ENV_PARENT_DIR'] = '{{trac.site_dir}}/projects'
+os.environ['PYTHON_EGG_CACHE'] = '{{trac.site_dir}}/egg-cache'
+
+import trac.web.main
+application = trac.web.main.dispatch_request
+

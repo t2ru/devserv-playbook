@@ -1,0 +1,13 @@
+WSGIDaemonProcess trac user={{ trac.service_user }} group={{ trac.service_group }} threads={{ trac.wsgi_threads }} python-path={{ trac.venv_dir }}/lib/python2.6/site-packages
+
+WSGIScriptAlias /trac {{ trac.site_dir }}/dispatch.wsgi
+WSGISocketPrefix {{ trac.site_dir }}/sock
+
+<Directory {{ trac.site_dir }}>
+  WSGIProcessGroup trac
+  WSGIApplicationGroup %{GLOBAL}
+  Options ExecCGI
+  Order deny,allow
+  Allow from all
+</Directory>
+

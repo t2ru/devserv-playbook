@@ -1,0 +1,8 @@
+---
+trac:
+  service_user: apache
+  service_group: apache
+  venv_dir: /opt/trac-venv
+  site_dir: /opt/trac-site
+  wsgi_threads: 5
+

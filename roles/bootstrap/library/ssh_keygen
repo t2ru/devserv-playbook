@@ -1,0 +1,20 @@
+#!/bin/bash
+
+eval $(perl -lne 'while(/\s?([^=\s]+)\s?=\s?(\"(?:\\\"|[^\"])+\"|\x27(?:\x27\\\x27\x27|[^\x27])+\x27|\S+)\s?/g){print "$1=$2"}' $1)
+
+if [ "x${keypath}" == "x" ]; then
+  echo 'failed=True msg="argument keypath is not specified."'; exit 0
+fi
+
+if [ -f "$keypath" ]; then
+  echo 'changed=False msg="key pair is already exists."'; exit 0
+fi
+
+ssh-keygen -t rsa -f "$keypath"
+R=$?
+if [ $R -ne 0 ]; then
+  echo 'failed=True rc=${R} msg="ssh-keygen failed."'; exit 0
+fi
+
+echo 'changed=True msg="succeeded."'; exit 0
+

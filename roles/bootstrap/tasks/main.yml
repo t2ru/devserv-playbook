@@ -1,0 +1,13 @@
+---
+- name: making ssh key pair
+  local_action: command ssh-keygen -t rsa -f "{{ ssh_key_path }}"
+  ignore_errors: yes
+- name: install libselinux-python
+  yum: pkg=libselinux-python state=installed
+- name: add ansible operation user
+  user: name="{{ ansible_user }}" group=wheel state=present
+- name: copy public key to target
+  authorized_key: user="{{ ansible_user }}" key="{{ ssh_pubkey }}"
+- name: set wheel group users as sudoers
+  template: src=sudoers.j2 dest=/etc/sudoers.d/ansible-setup
+

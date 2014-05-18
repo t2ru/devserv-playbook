@@ -3,5 +3,5 @@ ansible-playbook \
 --inventory-file=hosts \
 --ask-pass \
 --user=root \
-bootstrap/main.yml
+init.yml
 

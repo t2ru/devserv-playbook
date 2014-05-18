@@ -24,9 +24,12 @@
     - "{{ trac.site_dir }}/egg-cache"
   sudo: yes
 - name: install trac
-  pip: name=Trac virtualenv={{ trac.venv_dir }}
+  pip: name={{ item }} virtualenv={{ trac.venv_dir }}
   sudo: yes
   sudo_user: "{{ trac.service_user }}"
+  with_items:
+    - Babel
+    - Trac
 - name: trac wsgi executable
   template: src=trac/dispatch.wsgi.j2 dest={{ trac.site_dir }}/dispatch.wsgi
   sudo: yes

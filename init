@@ -2,6 +2,5 @@
 ansible-playbook \
 --inventory-file=hosts \
 --ask-pass \
---user=root \
 init.yml
 

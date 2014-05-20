@@ -1,3 +1,6 @@
 ---
-ansible_user: ansible-setup
+deploy_user: deployer
+ssh_key_path: "{{ inventory_dir }}/keys/id_rsa"
+ssh_pubkey_path: "{{ ssh_key_path }}.pub"
+ssh_pubkey: "{{ lookup('file', ssh_pubkey_path) }}"
 

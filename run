@@ -1,6 +1,6 @@
 #!/bin/sh
 INVENTORY=hosts
-ANSIBLE_USER=ansible-setup
+ANSIBLE_USER=deployer
 
 ansible-playbook \
 --inventory-file=${INVENTORY} \

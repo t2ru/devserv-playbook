@@ -1,12 +1,19 @@
 ---
-- name: making ssh key pair
-  local_action: ssh_keygen keypath="{{ ssh_key_path }}"
-- name: install libselinux-python
-  yum: pkg=libselinux-python state=installed
+# generate key pair
+- name: check if key pair exists
+  local_action: command test -f "{{ ssh_key_path }}"
+  failed_when: false
+  register: key_pair_exists
+  changed_when: key_pair_exists.rc != 0
+- name: generate ssh key pair
+  local_action: shell ssh-keygen -t rsa -f "{{ ssh_key_path }}" -N ""
+  when: key_pair_exists|changed
+
+# add ansible operation user
 - name: add ansible operation user
-  user: name="{{ ansible_user }}" group=wheel state=present
+  user: name="{{ deploy_user }}" group=wheel state=present
 - name: copy public key to target
-  authorized_key: user="{{ ansible_user }}" key="{{ ssh_pubkey }}"
+  authorized_key: user="{{ deploy_user }}" key="{{ ssh_pubkey }}"
 - name: set wheel group users as sudoers
   template: src=sudoers.j2 dest=/etc/sudoers.d/ansible-setup
 

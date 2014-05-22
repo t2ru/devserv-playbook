@@ -12,8 +12,11 @@
 # add ansible operation user
 - name: add ansible operation user
   user: name="{{ deploy_user }}" group=wheel state=present
+  sudo: yes
 - name: copy public key to target
   authorized_key: user="{{ deploy_user }}" key="{{ ssh_pubkey }}"
+  sudo: yes
 - name: set wheel group users as sudoers
   template: src=sudoers.j2 dest=/etc/sudoers.d/ansible-setup
+  sudo: yes
 

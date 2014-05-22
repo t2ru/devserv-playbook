@@ -1,6 +1,7 @@
 #!/bin/sh
 ansible-playbook \
 --inventory-file=hosts \
+--user=root \
 --ask-pass \
 init.yml
 

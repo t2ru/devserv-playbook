@@ -1,30 +1,5 @@
 ---
-# SELinux
-- name: install libselinux-python
-  yum: name=libselinux-python state=present
+- name: share hosts
+  template: src=hosts.j2 dest=/etc/hosts
   sudo: yes
-- name: disable selinux
-  selinux: state=disabled
-  sudo: yes
-# IP Tables
-- name: enable iptables
-  service: name=iptables state=started enabled=yes
-  sudo: yes
-- name: initialize iptables
-  template: src=iptables.j2 dest=/etc/sysconfig/iptables
-  sudo: yes
-  notify:
-    - restart iptables
-# python basic packages
-- name: install python-setuptools
-  yum: name=python-setuptools
-  sudo: yes
-- name: install pip
-  easy_install: name=pip
-  sudo: yes
-- name: install python basic packages
-  sudo: yes
-  pip: name={{item}} state=present
-  with_items:
-    - virtualenv
 

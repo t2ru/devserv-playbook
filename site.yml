@@ -1,5 +1,7 @@
 ---
-- hosts: servers
+- hosts: all
   roles:
-    - application
-
+    - common
+- hosts: devserv
+  roles:
+    - devserv

@@ -1,8 +1,9 @@
 master ansible_connection=local
 
 [devserv]
-target ansible_ssh_host=10.0.2.7
+target ansible_ssh_host=10.0.2.8
 
 [devserv:vars]
 ntp_servers=["ntp.nict.jp"]
+iptables_open_ports=[80]
 

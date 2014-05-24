@@ -1,4 +1,7 @@
 ---
+- name: change hostname
+  hostname: name="{{ inventory_hostname }}"
+  sudo: yes
 - name: share hosts
   template: src=hosts.j2 dest=/etc/hosts
   sudo: yes

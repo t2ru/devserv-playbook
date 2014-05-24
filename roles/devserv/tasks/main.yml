@@ -1,16 +1,28 @@
 ---
 
+# IPTables
+- name: /etc/sysconfig/iptables
+  template: src=iptables.j2 dest=/etc/sysconfig/iptables
+  sudo: yes
+  register: iptables_conf
+- name: ensure iptables disabled
+  service: name=iptables state=started enabled=yes
+  sudo: yes
+- name: restart iptables
+  when: iptables_conf|changed
+  service: name=iptables state=restarted
+  sudo: yes
+
 # NTP
-- debug: msg="hoge"
 - name: install ntpd
-  yum: pkg=ntp state=installed
+  yum: pkg=ntp-4.2.6p5 state=installed
   sudo: yes
 - name: make /etc/ntp.conf
   template: src=ntp.conf.j2 dest=/etc/ntp.conf
   sudo: yes
   register: ntp_conf
 - name: ensure enable ntpd
-  service: name=ntpd state=started enabled=true
+  service: name=ntpd state=started enabled=yes
   sudo: yes
 - name: restart ntpd
   service: name=ntpd state=restarted
@@ -25,4 +37,18 @@
       - "'jitter' in ntpq.stdout"
       - "'timed out' not in ntpq.stdout"
   when: not ntpq|skipped
+
+# Apache
+- name: install httpd
+  yum: pkg=httpd-2.2.15 state=installed
+  sudo: yes
+- name: make httpd.conf
+  template: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
+  sudo: yes
+- name: ensure enable httpd
+  service: name=httpd state=started enabled=yes
+  sudo: yes
+- name: ping url
+  local_action: uri url="http://{{ inventory_hostname }}/" status_code=200,403
+  # initial top page returns 403
 

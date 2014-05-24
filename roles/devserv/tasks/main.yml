@@ -52,3 +52,121 @@
   local_action: uri url="http://{{ inventory_hostname }}/" status_code=200,403
   # initial top page returns 403
 
+# PIP
+- name: install python setuptools
+  yum: pkg=python-setuptools state=installed
+  sudo: yes
+- name: install pip the python package manager
+  easy_install: name=pip
+  sudo: yes
+- name: install python basic packages
+  pip: name="{{ item }}" state=present
+  sudo: yes
+  with_items:
+    - virtualenv
+
+# Trac
+- name: install wsgi
+  yum: pkg=mod_wsgi state=installed
+  sudo: yes
+- name: make Trac directories
+  file: path="{{ item }}" state=directory
+        owner="{{ trac.service_user }}" group="{{ trac.service_group }}"
+  with_items:
+    - "{{ trac.base_dir }}"
+    - "{{ trac.venv_dir }}"
+    - "{{ trac.sock_dir }}"
+    - "{{ trac.projects_dir }}"
+    - "{{ trac.egg_cache_dir }}"
+  sudo: yes
+- name: install Trac
+  pip: name="{{ item.name }}" version="{{ item.version }}"
+       virtualenv="{{ trac.venv_dir }}"
+  with_items:
+    - { name: "Babel", version: "1.3" }
+    - { name: "Trac", version: "1.0.1" }
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac wsgi
+  template: src=trac/dispatch.wsgi.j2 dest="{{ trac.dispatch_wsgi }}"
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac apache configuration
+  template: src=trac/httpd.conf.j2 dest=/etc/httpd/conf.d/trac.conf
+  sudo: yes
+  notify:
+    - restart apache
+
+# RhodeCode
+- name: install required packages
+  yum: pkg="{{ item }}" state=installed
+  with_items:
+    - mod_wsgi
+    - gcc
+    - python-devel
+  sudo: yes
+- name: "git version must be >= 1.7.4 (download)"
+  get_url: url="http://pkgs.repoforge.org/git/{{ item }}"
+           dest="/tmp/{{ item }}"
+  with_items:
+    - "perl-Git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+    - "git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+- name: "git version must be >= 1.7.4 (install)"
+  command: yum localinstall -y
+           "/tmp/git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+           "/tmp/perl-Git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+  register: upgrade_unofficial_git
+  changed_when: upgrade_unofficial_git.stdout_lines[-1] != "Nothing to do"
+  sudo: yes
+- name: make rhodecode directories
+  file: path="{{ item }}" state=directory
+        owner="{{ rhodecode.service_user }}" group="{{ rhodecode.service_group }}"
+  with_items:
+    - "{{ rhodecode.base_dir }}"
+    - "{{ rhodecode.venv_dir }}"
+    - "{{ rhodecode.sock_dir }}"
+    - "{{ rhodecode.site_dir }}"
+    - "{{ rhodecode.repos_dir }}"
+    - "{{ rhodecode.egg_cache_dir }}"
+  sudo: yes
+- name: install RhodeCode
+  pip: name=RhodeCode version=2.2.5
+       virtualenv="{{ rhodecode.venv_dir }}"
+  sudo: yes
+  sudo_user: "{{ rhodecode.service_user }}"
+- name: install PasteDeploy
+  pip: name=PasteDeploy version=1.3.3
+       virtualenv="{{ rhodecode.venv_dir }}"
+  sudo: yes
+  sudo_user: "{{ rhodecode.service_user }}"
+#- name: install RhodeCode setup utilities
+#  pip: name="https://rhodecode.com/dl/tools/latest"
+#       virtualenv="{{ rhodecode.venv_dir }}"
+#  sudo: yes
+#  sudo_user: "{{ rhodecode.service_user }}"
+- name: make rhodecode production.ini
+  template: src=rhodecode/production.ini.j2 dest="{{ rhodecode.site_dir }}/production.ini"
+  sudo: yes
+  sudo_user: "{{ rhodecode.service_user }}"
+- name: check if database is already initialized
+  stat: path="{{ rhodecode.site_dir }}/rhodecode.db"
+  register: stat_rhodecode_db
+- name: run setup script
+  when: not stat_rhodecode_db.stat.exists
+  script: rhodecode_setup.sh
+          -i "{{ rhodecode.site_dir }}/production.ini"
+          -v "{{ rhodecode.venv_dir }}"
+          -r "{{ rhodecode.repos_dir }}"
+  sudo: yes
+  sudo_user: "{{ rhodecode.service_user }}"
+  register: rhodecode_setup
+  failed_when: rhodecode_setup.rc != 0 or "Traceback" in rhodecode_setup.stdout
+- name: rhodecode wsgi
+  template: src=rhodecode/dispatch.wsgi.j2 dest="{{ rhodecode.dispatch_wsgi }}"
+  sudo: yes
+  sudo_user: "{{ rhodecode.service_user }}"
+- name: rhodecode apache configuration
+  template: src=rhodecode/httpd.conf.j2 dest=/etc/httpd/conf.d/rhodecode.conf
+  sudo: yes
+  notify:
+    - restart apache

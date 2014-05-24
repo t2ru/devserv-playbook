@@ -1,2 +1,30 @@
 ---
 iptables_open_ports: []
+trac:
+  service_user: apache
+  service_group: apache
+  base_dir: /opt/trac
+  venv_dir: /opt/trac/venv
+  sock_dir: /opt/trac/sock
+  projects_dir: /opt/trac/projects
+  egg_cache_dir: /opt/trac/egg-cache
+  site_packages: /opt/trac/venv/lib/python2.6/site-packages
+  dispatch_wsgi: /opt/trac/dispatch.wsgi
+  wsgi_threads: 5
+  url_path: /trac
+rhodecode:
+  service_user: apache
+  service_group: apache
+  base_dir: /opt/rhodecode
+  venv_dir: /opt/rhodecode/venv
+  sock_dir: /opt/rhodecode/sock
+  site_dir: /opt/rhodecode/site
+  repos_dir: /opt/rhodecode/repos
+  egg_cache_dir: /opt/rhodecode/egg-cache
+  site_packages: /opt/rhodecode/venv/lib/python2.6/site-packages
+  dispatch_wsgi: /opt/rhodecode/dispatch.wsgi
+  wsgi_threads: 5
+  app_instance_uuid: "{{ rhodecode_app_instance_uuid }}"
+  url_path: /rhodecode
+  lang: ja
+

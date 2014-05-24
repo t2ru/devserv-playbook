@@ -1,0 +1,13 @@
+import os, site
+
+os.environ['HGENCODING'] = "UTF-8"
+os.environ['PYTHON_EGG_CACHE'] = '{{ rhodecode.egg_cache_dir }}'
+os.chdir('{{ rhodecode.site_dir }}')
+site.addsitedir('{{ rhodecode.site_packages }}')
+
+from paste.deploy import loadapp
+from paste.script.util.logging_config import fileConfig
+
+fileConfig('{{ rhodecode.site_dir }}/production.ini')
+application = loadapp('config:{{ rhodecode.site_dir }}/production.ini')
+

@@ -1,0 +1,14 @@
+WSGIDaemonProcess rhodecode user={{ rhodecode.service_user }} group={{ rhodecode.service_group }} threads={{ rhodecode.wsgi_threads }} python-path={{ rhodecode.site_packages }}
+
+WSGIScriptAlias {{ rhodecode.url_path }} {{ rhodecode.dispatch_wsgi }}
+WSGISocketPrefix {{ rhodecode.sock_dir }}
+
+<Directory {{ rhodecode.site_dir }}>
+  WSGIProcessGroup rhodecode
+  WSGIApplicationGroup %{GLOBAL}
+  WSGIPassAuthorization On
+  Options ExecCGI
+  Order deny,allow
+  Allow from all
+</Directory>
+

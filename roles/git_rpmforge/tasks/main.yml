@@ -1,0 +1,14 @@
+---
+- name: "git version must be >= 1.7.4 (download)"
+  get_url: url="http://pkgs.repoforge.org/git/{{ item }}"
+           dest="/tmp/{{ item }}"
+  with_items:
+    - "perl-Git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+    - "git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+- name: "git version must be >= 1.7.4 (install)"
+  command: yum localinstall -y
+           "/tmp/git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+           "/tmp/perl-Git-1.7.9.6-1.el6.rfx.x86_64.rpm"
+  register: upgrade_unofficial_git
+  changed_when: upgrade_unofficial_git.stdout_lines[-1] != "Nothing to do"
+  sudo: yes

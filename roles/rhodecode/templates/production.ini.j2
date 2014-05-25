@@ -136,7 +136,7 @@ issue_pat = (?:\s*#)(\d+)
 ## fetched from the regex and {repo} is replaced with full repository name
 ## including groups {repo_name} is replaced with just name of repo
 
-issue_server_link = http://{{ site_fqdn }}{{ trac.url_path }}/{repo}/ticket/{id}
+issue_server_link = {{ rhodecode.issue_service_url }}
 
 ## prefix to add to link to indicate it's an url
 ## #314 will be replaced by <issue_prefix><id>

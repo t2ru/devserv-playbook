@@ -1,0 +1,25 @@
+---
+- name: install ntpd
+  yum: pkg=ntp-4.2.6p5 state=installed
+  sudo: yes
+- name: make /etc/ntp.conf
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  sudo: yes
+  register: ntp_conf
+- name: ensure enable ntpd
+  service: name=ntpd state=started enabled=yes
+  sudo: yes
+- name: restart ntpd
+  service: name=ntpd state=restarted
+  sudo: yes
+  when: ntp_conf|changed
+- name: check ntp
+  command: /usr/sbin/ntpq -p
+  register: ntpq
+  changed_when: false
+- assert:
+    that:
+      - "'jitter' in ntpq.stdout"
+      - "'timed out' not in ntpq.stdout"
+  when: not ntpq|skipped
+

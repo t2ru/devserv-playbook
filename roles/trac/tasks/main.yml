@@ -1,0 +1,31 @@
+---
+- name: install wsgi
+  yum: pkg=mod_wsgi state=installed
+  sudo: yes
+- name: make Trac directories
+  file: path="{{ item }}" state=directory
+        owner="{{ trac.service_user }}" group="{{ trac.service_group }}"
+  with_items:
+    - "{{ trac.base_dir }}"
+    - "{{ trac.venv_dir }}"
+    - "{{ trac.sock_dir }}"
+    - "{{ trac.projects_dir }}"
+    - "{{ trac.egg_cache_dir }}"
+  sudo: yes
+- name: install Trac
+  pip: name="{{ item.name }}" version="{{ item.version }}"
+       virtualenv="{{ trac.venv_dir }}"
+  with_items:
+    - { name: "Babel", version: "1.3" }
+    - { name: "Trac", version: "1.0.1" }
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac wsgi
+  template: src=dispatch.wsgi.j2 dest="{{ trac.dispatch_wsgi }}"
+  sudo: yes
+  sudo_user: "{{ trac.service_user }}"
+- name: trac apache configuration
+  template: src=httpd.conf.j2 dest=/etc/httpd/conf.d/trac.conf
+  sudo: yes
+  notify:
+    - restart apache

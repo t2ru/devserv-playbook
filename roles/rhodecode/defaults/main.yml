@@ -1,17 +1,4 @@
 ---
-iptables_open_ports: []
-trac:
-  service_user: apache
-  service_group: apache
-  base_dir: /opt/trac
-  venv_dir: /opt/trac/venv
-  sock_dir: /opt/trac/sock
-  projects_dir: /opt/trac/projects
-  egg_cache_dir: /opt/trac/egg-cache
-  site_packages: /opt/trac/venv/lib/python2.6/site-packages
-  dispatch_wsgi: /opt/trac/dispatch.wsgi
-  wsgi_threads: 5
-  url_path: /trac
 rhodecode:
   service_user: apache
   service_group: apache
@@ -26,5 +13,6 @@ rhodecode:
   wsgi_threads: 5
   app_instance_uuid: "{{ rhodecode_app_instance_uuid }}"
   url_path: /rhodecode
+  issue_service_url: "http://{{ site_fqdn }}/trac/{repo}/ticket/{id}"
   lang: ja
 

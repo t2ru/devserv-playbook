@@ -1,0 +1,5 @@
+---
+dependencies:
+  - pip
+  - apache
+  - git_rpmforge

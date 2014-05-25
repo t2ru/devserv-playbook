@@ -1,7 +1,15 @@
 ---
 - hosts: all
   roles:
-    - common
+    - hosts
 - hosts: devserv
+  vars:
+    iptables_open_tcp_ports: [80] # HTTP
+    iptables_open_udp_ports: [123] # NTP
   roles:
-    - devserv
+    - iptables
+    - ntp
+    - apache
+    - pip
+    - trac
+    - rhodecode

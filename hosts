@@ -1,10 +1,9 @@
 master ansible_connection=local
 
 [devserv]
-target ansible_ssh_host=10.0.2.9
+target ansible_ssh_host=10.0.2.12
 
 [devserv:vars]
 site_fqdn=localhost
-ntp_servers=["ntp.nict.jp"]
-iptables_open_ports=[80]
+ntp_servers=["ntp1.plala.or.jp", "ntp2.plala.or.jp", "ntp.nict.jp"]
 rhodecode_app_instance_uuid=c18c011d4bf24f20-8106fa8879a7064e

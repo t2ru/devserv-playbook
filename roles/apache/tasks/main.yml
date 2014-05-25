@@ -1,0 +1,13 @@
+---
+- name: install httpd
+  yum: pkg=httpd-2.2.15 state=installed
+  sudo: yes
+- name: make httpd.conf
+  template: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf
+  sudo: yes
+- name: ensure enable httpd
+  service: name=httpd state=started enabled=yes
+  sudo: yes
+- name: ping url
+  local_action: uri url="http://{{ inventory_hostname }}/" status_code=200,403
+  # initial top page returns 403

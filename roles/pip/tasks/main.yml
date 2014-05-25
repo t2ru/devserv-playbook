@@ -1,0 +1,12 @@
+---
+- name: install python setuptools
+  yum: pkg=python-setuptools state=installed
+  sudo: yes
+- name: install pip the python package manager
+  easy_install: name=pip
+  sudo: yes
+- name: install python basic packages
+  pip: name="{{ item }}" state=present
+  sudo: yes
+  with_items:
+    - virtualenv

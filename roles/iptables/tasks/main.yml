@@ -1,0 +1,13 @@
+---
+- name: /etc/sysconfig/iptables
+  template: src=iptables.j2 dest=/etc/sysconfig/iptables
+  sudo: yes
+  register: iptables_conf
+- name: ensure iptables disabled
+  service: name=iptables state=started enabled=yes
+  sudo: yes
+- name: restart iptables
+  when: iptables_conf|changed
+  service: name=iptables state=restarted
+  sudo: yes
+
